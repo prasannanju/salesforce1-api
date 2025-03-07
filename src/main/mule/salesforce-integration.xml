@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:sap="http://www.mulesoft.org/schema/mule/sap" xmlns:salesforce-composite="http://www.mulesoft.org/schema/mule/salesforce-composite"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/salesforce-composite http://www.mulesoft.org/schema/mule/salesforce-composite/current/mule-salesforce-composite.xsd
+http://www.mulesoft.org/schema/mule/sap http://www.mulesoft.org/schema/mule/sap/current/mule-sap.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="76c8d686-75d4-455a-9fda-53f7c23eca9e" >
+		<http:listener-connection host="0.0.0.0" port="8083" />
+	</http:listener-config>
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="d4b4bc9e-cf8d-4cd0-8bb2-9caf18b9755c" >
+		<salesforce:basic-connection username="${SFDC.USERNAME}" password="${SFDC.PASSWORD}" securityToken="${SFDC.SECURITY}" />
+	</salesforce:sfdc-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="8b2ee22a-d788-4319-aa33-4e6008bae5ee" file="dev.yaml" />
+	<file:config name="File_Config" doc:name="File Config" doc:id="34f06256-8cb9-48f3-a081-a12d5b11b10f" />
+	<flow name="salesforce-integrationFlow" doc:id="21871aad-478b-4366-9dbf-4eeff8dcaf25" >
+		<http:listener doc:name="Listener" doc:id="6a8176c4-d8df-4f2f-886d-6e6b52b07d62" config-ref="HTTP_Listener_config" path="/co"/>
+		<ee:transform doc:name="Transform Message" doc:id="64c2ce19-91c5-4d3b-90da-2266adc44d1b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:create doc:name="Create" doc:id="f4078e08-c0c5-4490-ba19-93111a8228e3" config-ref="Salesforce_Config" type="Account"/>
+		<ee:transform doc:name="Transform Message" doc:id="a5a17716-5092-498d-b115-17a221bc2038">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="salesforce-integrationFlow1" doc:id="80357723-06c3-472c-abaf-22509510e967" >
+		<salesforce:modified-object-listener doc:name="On Modified Object" doc:id="e8620b28-d632-4194-8c58-a314bc45c3a6" config-ref="Salesforce_Config" objectType="Account">
+			<scheduling-strategy >
+				<fixed-frequency />
+			</scheduling-strategy>
+		</salesforce:modified-object-listener>
+		<ee:transform doc:name="Transform Message" doc:id="7c31878b-6806-4f6c-ae07-32fb40c6be56" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="998aafb7-9c78-4d4c-befd-f03fe47ddcf8" message='"payload":#[payload]'/>
+		<file:write doc:name="Write" doc:id="85cc8446-4387-4cce-bc1b-90459cedad65" config-ref="File_Config" path="C:\Users\windows\Documents\csvfile\file.csv" mode="APPEND">
+			<file:content ><![CDATA[#[output application/csv --- [payload]]]]></file:content>
+		</file:write>
+	</flow>
+</mule>
