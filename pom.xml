@@ -33,21 +33,28 @@
 				<version>${mule.maven.plugin.version}</version>
 				<extensions>true</extensions>
 				<configuration>
-					<cloudHubDeployment>
-						<uri>https://anypoint.mulesoft.com</uri>
-						<muleVersion>4.3.0</muleVersion>
-						<username>Rajani04</username>
-						<password>Krishraj@09</password>
-						<applicationName>salesforce-api</applicationName>
-						<environment>Design</environment>
-						<region>us-east-1</region>
-						<workers>1</workers>
-						<workerType>MICRO</workerType>
-						<properties>
-							<http.port>8081</http.port>
-						</properties>
-					</cloudHubDeployment>
-				</configuration>
+    <cloudhub2Deployment>
+      <uri>https://anypoint.mulesoft.com</uri>
+      <provider>MC</provider>
+      <environment>Design</environment>
+      <target>Cloudhub-US-East-1</target>
+      <muleVersion>4.9.2</muleVersion>
+      <username>Rajani04</username>
+      <password>Krishraj@09</password>
+      <applicationName>salesforce-api</applicationName>
+      <replicas>1</replicas>
+      <vCores>1</vCores>
+      <deploymentSettings>
+        <http>
+          <inbound>
+            <publicUrl>https://salesforce-api/anypoint.com</publicUrl>
+            <forwardSslSession>true</forwardSslSession>
+            <lastMileSecurity>true</lastMileSecurity>
+          </inbound>
+        </http>
+      </deploymentSettings>
+    </cloudhub2Deployment>
+  </configuration>
 			</plugin>
 		</plugins>
 	</build>
