@@ -44,15 +44,6 @@
 						<applicationName>salesforce-api</applicationName>
 						<replicas>1</replicas>
 						<vCores>1</vCores>
-						<deploymentSettings>
-							<http>
-								<inbound>
-									<publicUrl>https://salesforce-api/anypoint.com</publicUrl>
-									<forwardSslSession>true</forwardSslSession>
-									<lastMileSecurity>true</lastMileSecurity>
-								</inbound>
-							</http>
-						</deploymentSettings>
 					</cloudhub2Deployment>
 				</configuration>
 			</plugin>
