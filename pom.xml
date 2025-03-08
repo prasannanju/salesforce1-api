@@ -36,7 +36,7 @@
 					<cloudHubDeployment>
 						<uri>https://anypoint.mulesoft.com</uri>
 						<muleVersion>4.3.0</muleVersion>
-						<username>Rajani</username>
+						<username>Rajani04</username>
 						<password>Krishraj@09</password>
 						<applicationName>salesforce-api</applicationName>
 						<environment>Design</environment>
